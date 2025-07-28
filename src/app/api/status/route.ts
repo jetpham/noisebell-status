@@ -66,22 +66,33 @@ export async function POST(request: Request) {
         return new Response(JSON.stringify({ error: 'Invalid API key' }), { status: 401 });
     }
 
-    const body = await request.json();
+    let body;
+    try {
+        body = await request.json();
+    } catch (error) {
+        return new Response(JSON.stringify({ error: 'Invalid JSON in request body' }), { status: 400 });
+    }
+    
     const { status } = body;
 
-    if (status !== 'open' && status !== 'closed') {
-        return new Response(JSON.stringify({ error: 'Invalid status value' }), { status: 400 });
+    if (!status) {
+        return new Response(JSON.stringify({ error: 'Missing status field in request body' }), { status: 400 });
     }
+
+    if (status !== 'open' && status !== 'closed') {
+        return new Response(JSON.stringify({ error: 'Invalid status value. Must be "open" or "closed"' }), { status: 400 });
+    }
+
+    const statusEnum = status.toUpperCase() as 'OPEN' | 'CLOSED';
 
     const newStatus = await prisma.status.create({
         data: {
-            status,
+            status: statusEnum,
         },
     });
 
     revalidateTag('status');
-
-    // Only return serializable data
+    
     const response: StatusResponse = {
         status: newStatus.status,
         createdAt: newStatus.createdAt.toISOString()
