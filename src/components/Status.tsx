@@ -1,17 +1,29 @@
 import {
   Card,
-  CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 
-interface StatusProps {
-  status: 'open' | 'closed'
+async function getStatus(): Promise<'open' | 'closed'> {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/api/status`, {
+      cache: 'no-store'
+    });
+    
+    if (!response.ok) {
+      return 'closed';
+    }
+    
+    const data = await response.json();
+    return data?.status === 'open' ? 'open' : 'closed';
+  } catch (error) {
+    return 'closed';
+  }
 }
 
-export function Status({ status }: StatusProps) {
-  const isOpen = status === 'open'
+export async function Status() {
+  const status = await getStatus();
   
   const statusConfig = {
     open: {
