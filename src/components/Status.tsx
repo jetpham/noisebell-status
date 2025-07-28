@@ -17,7 +17,7 @@ async function getStatus(): Promise<'open' | 'closed'> {
     
     const data = await response.json();
     return data?.status === 'open' ? 'open' : 'closed';
-  } catch (error) {
+  } catch {
     return 'closed';
   }
 }
@@ -58,6 +58,7 @@ export async function Status() {
           </CardDescription>
         </div>
         <div className="flex-shrink-0 ml-4 flex items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img 
             src={config.image} 
             alt={`A knife switch in the ${config.title} position`}

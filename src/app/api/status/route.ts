@@ -1,5 +1,5 @@
 import { unstable_cacheTag as cacheTag } from 'next/cache'
-import { PrismaClient } from '../../../../generated/prisma'
+import { PrismaClient } from '@prisma/client'
 import { revalidateTag } from 'next/cache'
 
 type StatusResponse = {
